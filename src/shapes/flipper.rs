@@ -241,6 +241,8 @@ impl From<Flipper> for Mesh {
 
         down += value.border();
 
+        down += Vec3::new(0., -value.thickness / 2., 0.);
+
         down.into()
     }
 }

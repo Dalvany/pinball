@@ -10,7 +10,7 @@ use bevy::{log::LogPlugin, window::WindowTheme};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::*;
 use bevy_rapier3d::rapier::prelude::IntegrationParameters;
-use element::{AngleRange, Side};
+use element::Left;
 use shapes::Flipper;
 
 mod element;
@@ -87,7 +87,7 @@ fn main() {
 
 fn setup_camera_and_physics(mut commands: Commands, mut rapier_context: ResMut<RapierContext>) {
     let integration = IntegrationParameters {
-        max_ccd_substeps: 3,
+        max_ccd_substeps: 1,
         ..Default::default()
     };
     rapier_context.integration_parameters = integration;
@@ -145,8 +145,6 @@ fn setup(
             BALL_RADIUS + 0.01,
             TABLE_HEIGHT / 2. - (BALL_RADIUS + 0.01),
         )))
-        // Enable continuous detection collision to avoid "tunneling"
-        // https://rapier.rs/docs/user_guides/bevy_plugin/rigid_bodies/#continuous-collision-detection
         .insert(Ccd::enabled())
         .insert(Ball)
         .id();
@@ -169,17 +167,20 @@ fn impulse_ball(
     }
 }
 
-fn flip(keyboard: Res<Input<KeyCode>>, mut query: Query<(&mut Transform, &mut AngleRange)>) {
-    for (mut transform, mut angle_range) in &mut query.iter_mut() {
-        let force = if (keyboard.pressed(KeyCode::ControlLeft) && angle_range.side() == Side::Left)
-            || (keyboard.pressed(KeyCode::ControlRight) && angle_range.side() == Side::Right)
-        {
-            1.
+fn flip(keyboard: Res<Input<KeyCode>>, query: Query<Entity, With<Left>>, mut commands: Commands) {
+    for entity in &mut query.iter() {
+        let force = if keyboard.pressed(KeyCode::ControlLeft) {
+            -0.2
         } else {
-            0.
+            0.2
         };
-        let angle = angle_range.rotate(force);
-        transform.rotate_y(angle);
+
+        let impulse = ExternalImpulse {
+            impulse: Vec3::new(0., 0., force),
+            torque_impulse: Vec3::ZERO,
+        };
+
+        commands.entity(entity).insert(impulse);
     }
 }
 

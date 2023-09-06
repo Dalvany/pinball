@@ -9,7 +9,7 @@ use crate::{
     TABLE_INCLINATION, TABLE_WIDTH, WALL_HEIGHT,
 };
 
-use super::{AngleRange, Side};
+use super::Left;
 
 fn table(
     commands: &mut Commands,
@@ -211,23 +211,39 @@ fn middle_ellipses(
 
     // Upper left flipper
     let angle = -PI / 10.;
-    let mesh = Flipper::new(0.7, FLIPPER_SMALL, FLIPPER_BIG, WALL_HEIGHT, RESOLUTION).into();
+    let mesh = Flipper::new(
+        0.7,
+        FLIPPER_SMALL,
+        FLIPPER_BIG,
+        WALL_HEIGHT - 0.02,
+        RESOLUTION,
+    )
+    .into();
     let collider = Collider::from_bevy_mesh(&mesh, &ComputedColliderShape::TriMesh).unwrap();
+    let position_in_table = Vec3::new(
+        -TABLE_WIDTH / 2. + FLIPPER_BIG + x - angle.cos() * FLIPPER_BIG + 0.02,
+        0.,
+        (PI / 2.).sin() * FLIPPER_BIG + 0.02,
+    );
+
+    let rotation = RevoluteJointBuilder::new(Vec3::new(0., 1., 0.))
+        .local_anchor1(position_in_table)
+        .local_anchor2(Vec3::ZERO)
+        .limits([angle, angle + PI / 3.]);
     let upper_left_flipper = commands
         .spawn(PbrBundle {
             mesh: meshes.add(mesh),
             material: materials.add(Color::WHITE.into()),
-            transform: Transform::from_translation(Vec3::new(
-                -TABLE_WIDTH / 2. + FLIPPER_BIG + x - angle.cos() * FLIPPER_BIG,
-                -WALL_HEIGHT / 2.,
-                (PI / 2.).sin() * FLIPPER_BIG,
-            ))
-            .with_rotation(Quat::from_rotation_y(angle)),
+            transform: Transform::from_translation(position_in_table)
+                .with_rotation(Quat::from_rotation_y(angle)),
             ..Default::default()
         })
-        .insert(AngleRange::new(Side::Left, angle, angle + PI / 3.))
-        .insert(RigidBody::KinematicPositionBased)
+        .insert(Left)
+        .insert(RigidBody::Dynamic)
+        .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(collider)
+        .insert(Restitution::coefficient(0.3))
+        .insert(ImpulseJoint::new(table, rotation))
         .id();
     commands.entity(table).add_child(upper_left_flipper);
 }
