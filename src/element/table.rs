@@ -251,6 +251,11 @@ fn middle_ellipses(
         .insert(CollisionGroups::new(FLIPPERS_GROUP, BALL_GROUP))
         .insert(Restitution::coefficient(0.3))
         .insert(ImpulseJoint::new(table, rotation))
+        .insert(Damping {
+            linear_damping: 0.,
+            angular_damping: 5.,
+        })
+        .insert(Ccd::enabled())
         .id();
     commands.entity(table).add_child(upper_left_flipper);
 }

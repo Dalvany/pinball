@@ -179,12 +179,12 @@ fn flip(keyboard: Res<Input<KeyCode>>, query: Query<Entity, With<Left>>, mut com
     for entity in &mut query.iter() {
         let force = if keyboard.pressed(KeyCode::ControlLeft) {
             ExternalForce {
-                force: Vec3::new(0., 0., -6.),
+                force: Vec3::new(0., 0., -9.),
                 torque: Vec3::ZERO,
             }
         } else {
             ExternalForce {
-                force: Vec3::new(0., 0., 2.),
+                force: Vec3::new(0., 0., 4.),
                 torque: Vec3::ZERO,
             }
         };
