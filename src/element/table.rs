@@ -5,8 +5,8 @@ use bevy_rapier3d::prelude::*;
 
 use crate::shapes::{Ellipse, Flipper, Origin, Table};
 use crate::{
-    BALL_RADIUS, FLIPPER_BIG, FLIPPER_SMALL, GUIDE_HEIGHT, RESOLUTION, TABLE_HEIGHT,
-    TABLE_INCLINATION, TABLE_WIDTH, WALL_HEIGHT,
+    BALL_GROUP, BALL_RADIUS, FLIPPERS_GROUP, FLIPPER_BIG, FLIPPER_SMALL, GUIDE_HEIGHT, RESOLUTION,
+    TABLE_GROUP, TABLE_HEIGHT, TABLE_INCLINATION, TABLE_WIDTH, WALL_HEIGHT,
 };
 
 use super::Left;
@@ -25,6 +25,7 @@ fn table(
             transform: Transform::from_rotation(Quat::from_rotation_x(TABLE_INCLINATION)),
             ..default()
         })
+        .insert(CollisionGroups::new(TABLE_GROUP, BALL_GROUP))
         .insert(RigidBody::Fixed)
         .insert(collider)
         .id()
@@ -59,6 +60,7 @@ fn linear_guide(
             )
             .insert(RigidBody::Fixed)
             .insert(collider)
+            .insert(CollisionGroups::new(TABLE_GROUP, BALL_GROUP))
             .id();
         commands.entity(table).add_child(guide);
     }
@@ -98,6 +100,7 @@ fn elliptic_guide(
         )
         .insert(RigidBody::Fixed)
         .insert(collider)
+        .insert(CollisionGroups::new(TABLE_GROUP, BALL_GROUP))
         .id();
     commands.entity(table).add_child(elliptic_guide);
 }
@@ -136,6 +139,7 @@ fn top_ellipses(
         )
         .insert(RigidBody::Fixed)
         .insert(collider)
+        .insert(CollisionGroups::new(TABLE_GROUP, BALL_GROUP))
         .id();
     commands.entity(table).add_child(up);
 
@@ -168,6 +172,7 @@ fn top_ellipses(
         )
         .insert(RigidBody::Fixed)
         .insert(collider)
+        .insert(CollisionGroups::new(TABLE_GROUP, BALL_GROUP))
         .id();
     commands.entity(table).add_child(up);
 }
@@ -206,6 +211,7 @@ fn middle_ellipses(
             )
             .insert(RigidBody::Fixed)
             .insert(collider)
+            .insert(CollisionGroups::new(TABLE_GROUP, BALL_GROUP))
             .id();
     commands.entity(table).add_child(ellipse);
 
@@ -242,8 +248,15 @@ fn middle_ellipses(
         .insert(RigidBody::Dynamic)
         .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(collider)
+        .insert(CollisionGroups::new(FLIPPERS_GROUP, BALL_GROUP))
         .insert(Restitution::coefficient(0.3))
         .insert(ImpulseJoint::new(table, rotation))
+        .insert(Ccd::enabled())
+        // Spring force to put the flipper back to its initial position
+        .insert(ExternalForce {
+            force: Vec3::new(0., 0., 0.7),
+            torque: Vec3::ZERO,
+        })
         .id();
     commands.entity(table).add_child(upper_left_flipper);
 }
@@ -265,6 +278,7 @@ fn glass(
         })
         .insert(RigidBody::Fixed)
         .insert(collider)
+        .insert(CollisionGroups::new(TABLE_GROUP, BALL_GROUP))
         .id();
     commands.entity(table).add_child(glass);
 }

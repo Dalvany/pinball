@@ -16,6 +16,13 @@ use shapes::Flipper;
 mod element;
 mod shapes;
 
+/// Ball group
+const BALL_GROUP: Group = Group::GROUP_1;
+/// Table "fixed" element
+const TABLE_GROUP: Group = Group::GROUP_2;
+/// Flippers
+const FLIPPERS_GROUP: Group = Group::GROUP_32;
+
 const RESOLUTION: usize = 20;
 const TABLE_INCLINATION: f32 = 6.5 * PI / 180.;
 const TABLE_HEIGHT: f32 = 8.;
@@ -140,6 +147,7 @@ fn setup(
             linear_damping: 0.2,
             angular_damping: 0.2,
         })
+        .insert(CollisionGroups::new(BALL_GROUP, Group::all() - BALL_GROUP))
         .insert(TransformBundle::from(Transform::from_xyz(
             TABLE_WIDTH / 2. - (BALL_RADIUS + 0.01),
             BALL_RADIUS + 0.01,
@@ -169,18 +177,14 @@ fn impulse_ball(
 
 fn flip(keyboard: Res<Input<KeyCode>>, query: Query<Entity, With<Left>>, mut commands: Commands) {
     for entity in &mut query.iter() {
-        let force = if keyboard.pressed(KeyCode::ControlLeft) {
-            -0.2
-        } else {
-            0.2
-        };
+        if keyboard.pressed(KeyCode::ControlLeft) {
+            let impulse = ExternalImpulse {
+                impulse: Vec3::new(0., 0., -0.2),
+                torque_impulse: Vec3::ZERO,
+            };
 
-        let impulse = ExternalImpulse {
-            impulse: Vec3::new(0., 0., force),
-            torque_impulse: Vec3::ZERO,
+            commands.entity(entity).insert(impulse);
         };
-
-        commands.entity(entity).insert(impulse);
     }
 }
 
