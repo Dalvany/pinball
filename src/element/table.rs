@@ -251,12 +251,6 @@ fn middle_ellipses(
         .insert(CollisionGroups::new(FLIPPERS_GROUP, BALL_GROUP))
         .insert(Restitution::coefficient(0.3))
         .insert(ImpulseJoint::new(table, rotation))
-        .insert(Ccd::enabled())
-        // Spring force to put the flipper back to its initial position
-        .insert(ExternalForce {
-            force: Vec3::new(0., 0., 0.7),
-            torque: Vec3::ZERO,
-        })
         .id();
     commands.entity(table).add_child(upper_left_flipper);
 }

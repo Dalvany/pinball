@@ -177,14 +177,15 @@ fn impulse_ball(
 
 fn flip(keyboard: Res<Input<KeyCode>>, query: Query<Entity, With<Left>>, mut commands: Commands) {
     for entity in &mut query.iter() {
-        if keyboard.pressed(KeyCode::ControlLeft) {
-            let impulse = ExternalImpulse {
-                impulse: Vec3::new(0., 0., -0.2),
-                torque_impulse: Vec3::ZERO,
-            };
-
-            commands.entity(entity).insert(impulse);
+        let force = if keyboard.pressed(KeyCode::ControlLeft) {
+            Vec3::new(0., 0., -6.)
+        } else {
+            Vec3::new(0., 0., 2.)
         };
+
+        let external_force = ExternalForce::at_point(force, Vec3::new(0.5, 0., 0.), Vec3::ZERO);
+
+        commands.entity(entity).insert(external_force);
     }
 }
 
