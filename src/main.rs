@@ -154,6 +154,7 @@ fn setup(
             TABLE_HEIGHT / 2. - (BALL_RADIUS + 0.01),
         )))
         .insert(Ccd::enabled())
+        .insert(Dominance::group(0))
         .insert(Ball)
         .id();
     commands.entity(table).add_child(ball);
@@ -177,19 +178,25 @@ fn impulse_ball(
 
 fn flip(keyboard: Res<Input<KeyCode>>, query: Query<Entity, With<Left>>, mut commands: Commands) {
     for entity in &mut query.iter() {
-        let force = if keyboard.pressed(KeyCode::ControlLeft) {
-            ExternalForce {
-                force: Vec3::new(0., 0., -9.),
-                torque: Vec3::ZERO,
-            }
+        let (force, dominance) = if keyboard.pressed(KeyCode::ControlLeft) {
+            (
+                ExternalForce {
+                    force: Vec3::new(0., 0., -9.),
+                    torque: Vec3::ZERO,
+                },
+                Dominance::group(1),
+            )
         } else {
-            ExternalForce {
-                force: Vec3::new(0., 0., 4.),
-                torque: Vec3::ZERO,
-            }
+            (
+                ExternalForce {
+                    force: Vec3::new(0., 0., 4.),
+                    torque: Vec3::ZERO,
+                },
+                Dominance::group(0),
+            )
         };
 
-        commands.entity(entity).insert(force);
+        commands.entity(entity).insert(force).insert(dominance);
     }
 }
 
