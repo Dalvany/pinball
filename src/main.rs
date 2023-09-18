@@ -10,7 +10,7 @@ use bevy::{log::LogPlugin, window::WindowTheme};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::*;
 use bevy_rapier3d::rapier::prelude::IntegrationParameters;
-use element::Left;
+use element::Side;
 use shapes::Flipper;
 
 mod element;
@@ -176,9 +176,13 @@ fn impulse_ball(
     }
 }
 
-fn flip(keyboard: Res<Input<KeyCode>>, query: Query<Entity, With<Left>>, mut commands: Commands) {
-    for entity in &mut query.iter() {
-        let (force, dominance) = if keyboard.pressed(KeyCode::ControlLeft) {
+fn flip(keyboard: Res<Input<KeyCode>>, query: Query<(Entity, &Side)>, mut commands: Commands) {
+    for (entity, side) in &mut query.iter() {
+        let keycode = match side {
+            Side::Left => KeyCode::ControlLeft,
+            Side::Right => KeyCode::ControlRight,
+        };
+        let (force, dominance) = if keyboard.pressed(keycode) {
             (
                 ExternalForce {
                     force: Vec3::new(0., 0., -9.),

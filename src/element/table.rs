@@ -9,7 +9,7 @@ use crate::{
     TABLE_GROUP, TABLE_HEIGHT, TABLE_INCLINATION, TABLE_WIDTH, WALL_HEIGHT,
 };
 
-use super::Left;
+use super::Side;
 
 fn table(
     commands: &mut Commands,
@@ -177,7 +177,7 @@ fn top_ellipses(
     commands.entity(table).add_child(up);
 }
 
-fn middle_ellipses(
+fn middle_left_ellipse(
     commands: &mut Commands,
     meshes: &mut ResMut<Assets<Mesh>>,
     materials: &mut ResMut<Assets<StandardMaterial>>,
@@ -244,7 +244,7 @@ fn middle_ellipses(
                 .with_rotation(Quat::from_rotation_y(angle)),
             ..Default::default()
         })
-        .insert(Left)
+        .insert(Side::Left)
         .insert(RigidBody::Dynamic)
         .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(collider)
@@ -258,6 +258,49 @@ fn middle_ellipses(
         .insert(Ccd::enabled())
         .id();
     commands.entity(table).add_child(upper_left_flipper);
+}
+
+fn middle_right_ellipse(
+    commands: &mut Commands,
+    meshes: &mut ResMut<Assets<Mesh>>,
+    materials: &mut ResMut<Assets<StandardMaterial>>,
+    table: Entity,
+) {
+    let ellipse = Ellipse {
+        rectangle: true,
+        center: Origin::MaxXMaxZ,
+        first_angle: PI / 2.,
+        second_angle: PI / 8.,
+        resolution: RESOLUTION,
+        x: 0.8,
+        z: 0.3,
+        thickness: WALL_HEIGHT,
+    };
+    // Because of -PI/2 rotation in transform
+    // x "is z".
+    let x = ellipse.real_z();
+    let z = ellipse.real_x();
+    let mesh = ellipse.try_into().unwrap();
+    let collider = Collider::from_bevy_mesh(&mesh, &ComputedColliderShape::TriMesh).unwrap();
+    let ellipse = commands
+        .spawn(PbrBundle {
+            mesh: meshes.add(mesh),
+            material: materials.add(Color::rgb(0.4, 0.4, 0.4).into()),
+            ..default()
+        })
+        .insert(
+            Transform::from_rotation(Quat::from_rotation_z(PI) * Quat::from_rotation_y(-PI / 2.))
+                .with_translation(Vec3::new(
+                    TABLE_WIDTH / 2. - (BALL_RADIUS + 0.05) * 2.,
+                    0.,
+                    (TABLE_HEIGHT - GUIDE_HEIGHT) / 2. - z,
+                )),
+        )
+        .insert(RigidBody::Fixed)
+        .insert(collider)
+        .insert(CollisionGroups::new(TABLE_GROUP, BALL_GROUP))
+        .id();
+    commands.entity(table).add_child(ellipse);
 }
 
 fn glass(
@@ -300,7 +343,8 @@ pub(crate) fn setup_table(
     top_ellipses(commands, meshes, materials, table);
 
     // Ellipse for middle flippers
-    middle_ellipses(commands, meshes, materials, table);
+    middle_left_ellipse(commands, meshes, materials, table);
+    //middle_right_ellipse(commands, meshes, materials, table);
 
     // Glass on top
     glass(commands, meshes, materials, table);
