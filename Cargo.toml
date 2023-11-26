@@ -32,10 +32,10 @@ diagnostic = []
 camera = ["dep:bevy_panorbit_camera"]
 
 [dependencies]
-bevy = "0.11"
-bevy_rapier3d = "0.22"
+bevy = "0.12"
+bevy_rapier3d = "0.23"
 anyhow = "1.0"
 thiserror = "1.0"
 log = "0.4"
-bevy-inspector-egui = { version = "0.19", optional = true }
-bevy_panorbit_camera = { version = "0.8", optional = true }
+bevy-inspector-egui = { version = "0.21", optional = true }
+bevy_panorbit_camera = { version = "0.9", optional = true }
