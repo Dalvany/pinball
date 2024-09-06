@@ -4,14 +4,14 @@ use std::f32::consts::PI;
 
 #[cfg(feature = "diagnostic")]
 use bevy::diagnostic::*;
+use bevy::log::LogPlugin;
 use bevy::prelude::*;
-use bevy::{log::LogPlugin, window::WindowTheme};
+use bevy::window::WindowTheme;
 #[cfg(feature = "inspector")]
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::*;
 use bevy_rapier3d::rapier::prelude::IntegrationParameters;
 use element::Side;
-use shapes::Flipper;
 
 mod element;
 mod shapes;
@@ -32,7 +32,6 @@ const BALL_RADIUS: f32 = 0.1;
 const GUIDE_HEIGHT: f32 = TABLE_HEIGHT - 1.2;
 const FLIPPER_BIG: f32 = 0.1;
 const FLIPPER_SMALL: f32 = 0.05;
-const PAD_DEAD_ZONE: f32 = 0.2;
 
 #[derive(Component)]
 struct Ball;
@@ -44,6 +43,7 @@ fn main() {
     let log_plugin = LogPlugin {
         level: bevy::log::Level::DEBUG,
         filter: "info,wgpu_core=warn,wgpu_hal=warn,pinball=debug".into(),
+        custom_layer: |_| None,
     };
 
     #[cfg(not(debug_assertions))]
@@ -127,15 +127,13 @@ fn setup(
     let table = element::setup_table(&mut commands, &mut meshes, &mut materials);
 
     // Ball
-    let mesh = Mesh::try_from(shape::Icosphere {
+    let mesh = Mesh::from(Sphere {
         radius: BALL_RADIUS,
-        subdivisions: 5,
-    })
-    .unwrap();
+    });
     let ball = commands
         .spawn(PbrBundle {
             mesh: meshes.add(mesh),
-            material: materials.add(Color::rgb(0., 0., 1.).into()),
+            material: materials.add(Color::srgb(0., 0., 1.)),
             ..default()
         })
         .insert(RigidBody::Dynamic)
@@ -161,7 +159,7 @@ fn setup(
 }
 
 fn impulse_ball(
-    keyboard: Res<Input<KeyCode>>,
+    keyboard: Res<ButtonInput<KeyCode>>,
     ball: Query<Entity, With<Ball>>,
     mut commands: Commands,
 ) {
@@ -176,7 +174,11 @@ fn impulse_ball(
     }
 }
 
-fn flip(keyboard: Res<Input<KeyCode>>, query: Query<(Entity, &Side)>, mut commands: Commands) {
+fn flip(
+    keyboard: Res<ButtonInput<KeyCode>>,
+    query: Query<(Entity, &Side)>,
+    mut commands: Commands,
+) {
     for (entity, side) in &mut query.iter() {
         let keycode = match side {
             Side::Left => KeyCode::ControlLeft,
@@ -202,21 +204,4 @@ fn flip(keyboard: Res<Input<KeyCode>>, query: Query<(Entity, &Side)>, mut comman
 
         commands.entity(entity).insert(force).insert(dominance);
     }
-}
-
-fn test_shape(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
-    let mesh = Flipper::new(5., 0.3, 1., 1., 10).into();
-    let collider = Collider::from_bevy_mesh(&mesh, &ComputedColliderShape::TriMesh).unwrap();
-    commands
-        .spawn(PbrBundle {
-            mesh: meshes.add(mesh),
-            material: materials.add(Color::GRAY.into()),
-            ..Default::default()
-        })
-        .insert(RigidBody::Fixed)
-        .insert(collider);
 }

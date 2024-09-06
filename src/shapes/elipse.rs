@@ -4,7 +4,6 @@
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
-use bevy::render::{mesh::Indices, render_resource::PrimitiveTopology};
 use thiserror::Error;
 
 use super::{MeshElements, X_POSITIF, Y_NEGATIF, Y_POSITIF, Z_NEGATIF};

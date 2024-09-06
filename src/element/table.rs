@@ -1,15 +1,14 @@
 use std::f32::consts::PI;
 
-use bevy::prelude::{shape::Box, shape::Quad, *};
+use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
+use super::Side;
 use crate::shapes::{Ellipse, Flipper, Origin, Table};
 use crate::{
     BALL_GROUP, BALL_RADIUS, FLIPPERS_GROUP, FLIPPER_BIG, FLIPPER_SMALL, GUIDE_HEIGHT, RESOLUTION,
     TABLE_GROUP, TABLE_HEIGHT, TABLE_INCLINATION, TABLE_WIDTH, WALL_HEIGHT,
 };
-
-use super::Side;
 
 fn table(
     commands: &mut Commands,
@@ -21,7 +20,7 @@ fn table(
     commands
         .spawn(PbrBundle {
             mesh: meshes.add(mesh),
-            material: materials.add(Color::rgb(0.4, 0.4, 0.4).into()),
+            material: materials.add(Color::srgb(0.4, 0.4, 0.4)),
             transform: Transform::from_rotation(Quat::from_rotation_x(TABLE_INCLINATION)),
             ..default()
         })
@@ -43,12 +42,12 @@ fn linear_guide(
         } else {
             Quat::from_rotation_y(-PI / 2.)
         };
-        let mesh = Mesh::from(Quad::new(Vec2::new(GUIDE_HEIGHT, WALL_HEIGHT)));
+        let mesh = Mesh::from(Rectangle::new(GUIDE_HEIGHT, WALL_HEIGHT));
         let collider = Collider::from_bevy_mesh(&mesh, &ComputedColliderShape::TriMesh).unwrap();
         let guide = commands
             .spawn(PbrBundle {
                 mesh: meshes.add(mesh),
-                material: materials.add(Color::rgb(0.4, 0.4, 0.4).into()),
+                material: materials.add(Color::srgb(0.4, 0.4, 0.4)),
                 ..default()
             })
             .insert(
@@ -88,7 +87,7 @@ fn elliptic_guide(
     let elliptic_guide = commands
         .spawn(PbrBundle {
             mesh: meshes.add(mesh),
-            material: materials.add(Color::rgb(0.4, 0.4, 0.4).into()),
+            material: materials.add(Color::srgb(0.4, 0.4, 0.4)),
             ..default()
         })
         .insert(
@@ -127,7 +126,7 @@ fn top_ellipses(
     let up = commands
         .spawn(PbrBundle {
             mesh: meshes.add(mesh),
-            material: materials.add(Color::rgb(0.4, 0.4, 0.4).into()),
+            material: materials.add(Color::srgb(0.4, 0.4, 0.4)),
             ..default()
         })
         .insert(
@@ -160,7 +159,7 @@ fn top_ellipses(
     let up = commands
         .spawn(PbrBundle {
             mesh: meshes.add(mesh),
-            material: materials.add(Color::rgb(0.4, 0.4, 0.4).into()),
+            material: materials.add(Color::srgb(0.4, 0.4, 0.4)),
             ..default()
         })
         .insert(
@@ -202,7 +201,7 @@ fn middle_left_ellipse(
         commands
             .spawn(PbrBundle {
                 mesh: meshes.add(mesh),
-                material: materials.add(Color::rgb(0.4, 0.4, 0.4).into()),
+                material: materials.add(Color::srgb(0.4, 0.4, 0.4)),
                 ..default()
             })
             .insert(
@@ -239,7 +238,7 @@ fn middle_left_ellipse(
     let upper_left_flipper = commands
         .spawn(PbrBundle {
             mesh: meshes.add(mesh),
-            material: materials.add(Color::WHITE.into()),
+            material: materials.add(Color::WHITE),
             transform: Transform::from_translation(position_in_table)
                 .with_rotation(Quat::from_rotation_y(angle)),
             ..Default::default()
@@ -278,14 +277,13 @@ fn middle_right_ellipse(
     };
     // Because of -PI/2 rotation in transform
     // x "is z".
-    let x = ellipse.real_z();
     let z = ellipse.real_x();
     let mesh = ellipse.try_into().unwrap();
     let collider = Collider::from_bevy_mesh(&mesh, &ComputedColliderShape::TriMesh).unwrap();
     let ellipse = commands
         .spawn(PbrBundle {
             mesh: meshes.add(mesh),
-            material: materials.add(Color::rgb(0.4, 0.4, 0.4).into()),
+            material: materials.add(Color::srgb(0.4, 0.4, 0.4)),
             ..default()
         })
         .insert(
@@ -309,12 +307,12 @@ fn glass(
     materials: &mut ResMut<Assets<StandardMaterial>>,
     table: Entity,
 ) {
-    let mesh = Box::new(TABLE_WIDTH, 0.05, TABLE_HEIGHT).into();
+    let mesh = Cuboid::new(TABLE_WIDTH, 0.05, TABLE_HEIGHT).into();
     let collider = Collider::from_bevy_mesh(&mesh, &ComputedColliderShape::TriMesh).unwrap();
     let glass = commands
         .spawn(PbrBundle {
             mesh: meshes.add(mesh),
-            material: materials.add(Color::NONE.into()),
+            material: materials.add(Color::NONE),
             transform: Transform::from_translation(Vec3::new(0., WALL_HEIGHT / 2., 0.)),
             ..Default::default()
         })
