@@ -50,6 +50,7 @@ fn main() {
     let log_plugin = LogPlugin {
         level: bevy::log::Level::DEBUG,
         filter: "info,wgpu_core=warn,wgpu_hal=warn".into(),
+        custom_layer: |_| None,
     };
 
     // Use WinitPlugin ??
