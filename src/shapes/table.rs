@@ -45,50 +45,50 @@ impl From<Table> for Mesh {
         #[rustfmt::skip]
         let vertices = vec![
             // Floor
-            [x_offset,               y_offset ,                    z_offset               ],
-            [x_offset,               y_offset ,                    z_offset + value.height],
-            [x_offset + value.width, y_offset ,                    z_offset + value.height],
-            [x_offset + value.width, y_offset ,                    z_offset               ],
+            [x_offset,               y_offset ,                  z_offset               ],
+            [x_offset,               y_offset ,                  z_offset + value.height],
+            [x_offset + value.width, y_offset ,                  z_offset + value.height],
+            [x_offset + value.width, y_offset ,                  z_offset               ],
             // Inside left wall
-            [x_offset,               y_offset ,                    z_offset               ],
+            [x_offset,               y_offset ,                  z_offset               ],
             [x_offset,               y_offset + value.thickness, z_offset               ],
             [x_offset,               y_offset + value.thickness, z_offset + value.height],
-            [x_offset,               y_offset ,                    z_offset + value.height],
+            [x_offset,               y_offset ,                  z_offset + value.height],
             // Outside left wall
-            [x_offset,               y_offset ,                    z_offset               ],
-            [x_offset,               y_offset ,                    z_offset + value.height],
+            [x_offset,               y_offset ,                  z_offset               ],
+            [x_offset,               y_offset ,                  z_offset + value.height],
             [x_offset,               y_offset + value.thickness, z_offset + value.height],
             [x_offset,               y_offset + value.thickness, z_offset               ],
             // Inside front wall
-            [x_offset,               y_offset ,                    z_offset + value.height],
+            [x_offset,               y_offset ,                  z_offset + value.height],
             [x_offset,               y_offset + value.thickness, z_offset + value.height],
             [x_offset + value.width, y_offset + value.thickness, z_offset + value.height],
-            [x_offset + value.width, y_offset ,                    z_offset + value.height],
+            [x_offset + value.width, y_offset ,                  z_offset + value.height],
             // Outside front wall
-            [x_offset,               y_offset ,                    z_offset + value.height],
-            [x_offset + value.width, y_offset ,                    z_offset + value.height],
+            [x_offset,               y_offset ,                  z_offset + value.height],
+            [x_offset + value.width, y_offset ,                  z_offset + value.height],
             [x_offset + value.width, y_offset + value.thickness, z_offset + value.height],
             [x_offset,               y_offset + value.thickness, z_offset + value.height],
             // Inside right wall
-            [x_offset + value.width, y_offset ,                    z_offset + value.height],
+            [x_offset + value.width, y_offset ,                  z_offset + value.height],
             [x_offset + value.width, y_offset + value.thickness, z_offset + value.height],
             [x_offset + value.width, y_offset + value.thickness, z_offset               ],
-            [x_offset + value.width, y_offset ,                    z_offset               ],
+            [x_offset + value.width, y_offset ,                  z_offset               ],
             // Ouside right wall
-            [x_offset + value.width, y_offset ,                    z_offset + value.height],
-            [x_offset + value.width, y_offset ,                    z_offset               ],
+            [x_offset + value.width, y_offset ,                  z_offset + value.height],
+            [x_offset + value.width, y_offset ,                  z_offset               ],
             [x_offset + value.width, y_offset + value.thickness, z_offset               ],
             [x_offset + value.width, y_offset + value.thickness, z_offset + value.height],
             // Inside back wall
-            [x_offset,               y_offset ,                    z_offset               ],
-            [x_offset + value.width, y_offset ,                    z_offset               ],
+            [x_offset,               y_offset ,                  z_offset               ],
+            [x_offset + value.width, y_offset ,                  z_offset               ],
             [x_offset + value.width, y_offset + value.thickness, z_offset               ],
             [x_offset,               y_offset + value.thickness, z_offset               ],
             // Outside back wall
-            [x_offset,               y_offset ,                    z_offset               ],
+            [x_offset,               y_offset ,                  z_offset               ],
             [x_offset,               y_offset + value.thickness, z_offset               ],
             [x_offset + value.width, y_offset + value.thickness, z_offset               ],
-            [x_offset + value.width, y_offset ,                    z_offset               ],
+            [x_offset + value.width, y_offset ,                  z_offset               ],
         ];
 
         let normals = vec![
