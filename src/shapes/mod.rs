@@ -58,14 +58,12 @@ impl std::ops::AddAssign<Vec3> for MeshElements {
 
 impl From<MeshElements> for Mesh {
     fn from(value: MeshElements) -> Self {
-        let mesh = Mesh::new(
+        Mesh::new(
             PrimitiveTopology::TriangleList,
             RenderAssetUsages::default(),
         )
         .with_inserted_indices(Indices::U32(value.indices))
         .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, value.vertices)
-        .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, value.normals);
-
-        mesh
+        .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, value.normals)
     }
 }

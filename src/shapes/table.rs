@@ -118,14 +118,12 @@ impl From<Table> for Mesh {
             indices.push(i);
         }
 
-        let mesh = Mesh::new(
+        Mesh::new(
             PrimitiveTopology::TriangleList,
             RenderAssetUsages::default(),
         )
         .with_inserted_indices(Indices::U32(indices))
         .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, vertices)
-        .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
-
-        mesh
+        .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, normals)
     }
 }
