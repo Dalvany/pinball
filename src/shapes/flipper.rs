@@ -1,9 +1,6 @@
 use std::f32::consts::PI;
 
-use bevy::{
-    prelude::*,
-    render::{mesh::Indices, render_resource::PrimitiveTopology},
-};
+use bevy::prelude::*;
 
 use crate::shapes::{MeshElements, Y_NEGATIF, Y_POSITIF};
 

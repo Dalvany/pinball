@@ -1,7 +1,7 @@
-use bevy::{
-    prelude::{Mesh, Vec3},
-    render::{mesh::Indices, render_resource::PrimitiveTopology},
-};
+use bevy::prelude::{Mesh, Vec3};
+use bevy::render::mesh::Indices;
+use bevy::render::render_asset::RenderAssetUsages;
+use bevy::render::render_resource::PrimitiveTopology;
 pub(crate) use elipse::*;
 pub(crate) use flipper::*;
 pub(crate) use table::*;
@@ -58,11 +58,12 @@ impl std::ops::AddAssign<Vec3> for MeshElements {
 
 impl From<MeshElements> for Mesh {
     fn from(value: MeshElements) -> Self {
-        let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
-        mesh.set_indices(Some(Indices::U32(value.indices)));
-        mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, value.vertices);
-        mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, value.normals);
-
-        mesh
+        Mesh::new(
+            PrimitiveTopology::TriangleList,
+            RenderAssetUsages::default(),
+        )
+        .with_inserted_indices(Indices::U32(value.indices))
+        .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, value.vertices)
+        .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, value.normals)
     }
 }

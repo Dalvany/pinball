@@ -1,7 +1,9 @@
 //! This module is the mesh for the table. It's a simple box with no top.
 
 use bevy::prelude::*;
-use bevy::render::{mesh::Indices, render_resource::PrimitiveTopology};
+use bevy::render::mesh::Indices;
+use bevy::render::render_asset::RenderAssetUsages;
+use bevy::render::render_resource::PrimitiveTopology;
 
 use super::{X_NEGATIF, X_POSITIF, Y_POSITIF, Z_NEGATIF, Z_POSITIF};
 
@@ -43,50 +45,50 @@ impl From<Table> for Mesh {
         #[rustfmt::skip]
         let vertices = vec![
             // Floor
-            [x_offset,               y_offset ,                    z_offset               ],
-            [x_offset,               y_offset ,                    z_offset + value.height],
-            [x_offset + value.width, y_offset ,                    z_offset + value.height],
-            [x_offset + value.width, y_offset ,                    z_offset               ],
+            [x_offset,               y_offset ,                  z_offset               ],
+            [x_offset,               y_offset ,                  z_offset + value.height],
+            [x_offset + value.width, y_offset ,                  z_offset + value.height],
+            [x_offset + value.width, y_offset ,                  z_offset               ],
             // Inside left wall
-            [x_offset,               y_offset ,                    z_offset               ],
+            [x_offset,               y_offset ,                  z_offset               ],
             [x_offset,               y_offset + value.thickness, z_offset               ],
             [x_offset,               y_offset + value.thickness, z_offset + value.height],
-            [x_offset,               y_offset ,                    z_offset + value.height],
+            [x_offset,               y_offset ,                  z_offset + value.height],
             // Outside left wall
-            [x_offset,               y_offset ,                    z_offset               ],
-            [x_offset,               y_offset ,                    z_offset + value.height],
+            [x_offset,               y_offset ,                  z_offset               ],
+            [x_offset,               y_offset ,                  z_offset + value.height],
             [x_offset,               y_offset + value.thickness, z_offset + value.height],
             [x_offset,               y_offset + value.thickness, z_offset               ],
             // Inside front wall
-            [x_offset,               y_offset ,                    z_offset + value.height],
+            [x_offset,               y_offset ,                  z_offset + value.height],
             [x_offset,               y_offset + value.thickness, z_offset + value.height],
             [x_offset + value.width, y_offset + value.thickness, z_offset + value.height],
-            [x_offset + value.width, y_offset ,                    z_offset + value.height],
+            [x_offset + value.width, y_offset ,                  z_offset + value.height],
             // Outside front wall
-            [x_offset,               y_offset ,                    z_offset + value.height],
-            [x_offset + value.width, y_offset ,                    z_offset + value.height],
+            [x_offset,               y_offset ,                  z_offset + value.height],
+            [x_offset + value.width, y_offset ,                  z_offset + value.height],
             [x_offset + value.width, y_offset + value.thickness, z_offset + value.height],
             [x_offset,               y_offset + value.thickness, z_offset + value.height],
             // Inside right wall
-            [x_offset + value.width, y_offset ,                    z_offset + value.height],
+            [x_offset + value.width, y_offset ,                  z_offset + value.height],
             [x_offset + value.width, y_offset + value.thickness, z_offset + value.height],
             [x_offset + value.width, y_offset + value.thickness, z_offset               ],
-            [x_offset + value.width, y_offset ,                    z_offset               ],
+            [x_offset + value.width, y_offset ,                  z_offset               ],
             // Ouside right wall
-            [x_offset + value.width, y_offset ,                    z_offset + value.height],
-            [x_offset + value.width, y_offset ,                    z_offset               ],
+            [x_offset + value.width, y_offset ,                  z_offset + value.height],
+            [x_offset + value.width, y_offset ,                  z_offset               ],
             [x_offset + value.width, y_offset + value.thickness, z_offset               ],
             [x_offset + value.width, y_offset + value.thickness, z_offset + value.height],
             // Inside back wall
-            [x_offset,               y_offset ,                    z_offset               ],
-            [x_offset + value.width, y_offset ,                    z_offset               ],
+            [x_offset,               y_offset ,                  z_offset               ],
+            [x_offset + value.width, y_offset ,                  z_offset               ],
             [x_offset + value.width, y_offset + value.thickness, z_offset               ],
             [x_offset,               y_offset + value.thickness, z_offset               ],
             // Outside back wall
-            [x_offset,               y_offset ,                    z_offset               ],
+            [x_offset,               y_offset ,                  z_offset               ],
             [x_offset,               y_offset + value.thickness, z_offset               ],
             [x_offset + value.width, y_offset + value.thickness, z_offset               ],
-            [x_offset + value.width, y_offset ,                    z_offset               ],
+            [x_offset + value.width, y_offset ,                  z_offset               ],
         ];
 
         let normals = vec![
@@ -116,11 +118,12 @@ impl From<Table> for Mesh {
             indices.push(i);
         }
 
-        let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
-        mesh.set_indices(Some(Indices::U32(indices)));
-        mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, vertices);
-        mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
-
-        mesh
+        Mesh::new(
+            PrimitiveTopology::TriangleList,
+            RenderAssetUsages::default(),
+        )
+        .with_inserted_indices(Indices::U32(indices))
+        .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, vertices)
+        .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, normals)
     }
 }
